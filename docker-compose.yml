@@ -1,0 +1,40 @@
+version: '3.7'
+
+# Please replace value depending on your project
+## Environment variables for workspace
+x-app-working-dir: &APP_WORKING_DIR
+  "/home/ts-nodejs-sample-template"
+x-app-project-volume: &APP_PROJECT_VOLUME
+  ".:/home/ts-nodejs-sample-template"
+x-app-ports: &APP_PORTS
+  - 13000:3000
+## Environment variables for mysql database
+x-mysqldb-environment: &MYSQLDB_ENVIRONMENT
+  MYSQL_ROOT_PASSWORD: root
+  MYSQL_DATABASE: devdb
+  MYSQL_USER: devuser
+  MYSQL_PASSWORD: devdev
+
+services:
+  workspace:
+    build:
+      context: ./docker/workspace
+    container_name: template-workspace
+    depends_on:
+      - mysqldb-local
+    volumes:
+      - *APP_PROJECT_VOLUME
+    working_dir: *APP_WORKING_DIR
+    ports: *APP_PORTS
+    tty: true
+  mysqldb-local:
+    build:
+      context: ./docker/mysqldb
+    container_name: template-mysqldb-local
+    ports:
+      - 13306:3306
+    volumes:
+      - ./docker/mysqldb/init.d:/docker-entrypoint-initdb.d
+      - ./docker/mysqldb/conf.d:/etc/mysql/conf.d
+      - ./docker/mysqldb/data:/var/lib/mysql
+    environment: *MYSQLDB_ENVIRONMENT
