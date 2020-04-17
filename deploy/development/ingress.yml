@@ -1,0 +1,13 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: sample-app-ingress
+  namespace: mkaiho-dev
+spec:
+  rules:
+  - host: sample-app.mkaiho.dev
+    http:
+      paths:
+      - backend:
+          serviceName: sample-app-service
+          servicePort: 3000
